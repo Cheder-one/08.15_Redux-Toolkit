@@ -1,13 +1,17 @@
-import { configureStore } from "@reduxjs/toolkit";
-import taskReducer from "./task/reducer";
+import { configureStore, combineReducers } from "@reduxjs/toolkit";
 
-const preloadedState = [
-  { id: 1, title: "Task 1", completed: false },
-  { id: 2, title: "Task 2", completed: false },
-];
+import taskReducer from "./reducers/tasks";
+import errorsReducer from "./reducers/errors";
 
-const initiateStore = () => {
-  return configureStore({ reducer: taskReducer, preloadedState });
+const rootReducer = combineReducers({
+  errors: errorsReducer,
+  tasks: taskReducer,
+});
+
+const createStore = () => {
+  return configureStore({
+    reducer: rootReducer,
+  });
 };
 
-export default initiateStore;
+export default createStore;

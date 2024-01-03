@@ -1,27 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { bindActionCreators } from "redux";
-import { initStore, actions } from "./store";
+import { useSelector, useDispatch } from "react-redux";
 
-const store = initStore();
-const { dispatch, subscribe } = store;
+import * as actions from "./store/reducers/tasks";
+import * as selectors from "./store/reducers/tasks";
+import { getErrors } from "./store/reducers/errors";
+
+const { getTasks, getTasksLoadingStatus } = selectors;
 
 const App = () => {
-  const [state, setState] = useState(store.getState());
+  const state = useSelector(getTasks());
+  const isLoading = useSelector(getTasksLoadingStatus());
+  const error = useSelector(getErrors());
+
+  const dispatch = useDispatch();
+
+  const { loadTasks, taskCompleted, titleChanged, taskAdded, taskDeleted } =
+    bindActionCreators(actions, dispatch);
 
   useEffect(() => {
-    subscribe(() => {
-      setState(store.getState());
-      console.log(store.getState());
-    });
+    loadTasks();
   }, []);
-
-  // prettier-ignore
-  const { 
-    taskCompleted,
-    titleChanged,
-    taskAdded,
-    taskDeleted 
-  } = bindActionCreators(actions, dispatch);
 
   const handleTaskComplete = (id) => {
     taskCompleted(id);
@@ -39,10 +38,15 @@ const App = () => {
     taskDeleted(id);
   };
 
+  if (isLoading) {
+    return <h1>Loading...</h1>;
+  }
+  if (error.length > 0) {
+    return <p>{error}</p>;
+  }
+
   return (
     <>
-      <h1>App</h1>
-      <p />
       {state.map((task) => (
         <li key={task.id}>
           <span>{task.title}</span>
