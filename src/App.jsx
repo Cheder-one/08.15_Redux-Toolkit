@@ -15,7 +15,7 @@ const App = () => {
 
   const dispatch = useDispatch();
 
-  const { loadTasks, taskCompleted, titleChanged, taskAdded, taskDeleted } =
+  const { loadTasks, taskCompleted, titleChanged, createTask, taskDeleted } =
     bindActionCreators(actions, dispatch);
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const App = () => {
   };
 
   const handleTaskAdd = () => {
-    taskAdded();
+    createTask("New Task");
   };
 
   const handleTaskDelete = (id) => {

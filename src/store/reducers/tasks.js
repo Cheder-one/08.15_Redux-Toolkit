@@ -18,6 +18,7 @@ const taskSlice = createSlice({
     },
     add(state, action) {
       state.entities.push(action.payload);
+      state.isLoading = false;
     },
     update(state, action) {
       const newArr = state.entities.map((task) => {
@@ -51,6 +52,17 @@ export const loadTasks = () => async (dispatch) => {
   try {
     const data = await todosService.fetch();
     dispatch(received(data));
+  } catch (error) {
+    dispatch(taskRequestFailed());
+    dispatch(setErrors(error.message));
+  }
+};
+
+export const createTask = (title) => async (dispatch) => {
+  dispatch(taskRequested());
+  try {
+    const data = await todosService.create(title);
+    dispatch(add(data));
   } catch (error) {
     dispatch(taskRequestFailed());
     dispatch(setErrors(error.message));
